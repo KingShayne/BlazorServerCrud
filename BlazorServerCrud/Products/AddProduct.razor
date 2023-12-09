@@ -1,0 +1,46 @@
+﻿@inject ProductService _productService
+
+
+<div class="overlay">
+    <div class="edit-form">
+        <h3>Add Product</h3>
+        <div class="form-group">
+            <label form="productName">Product Name</label>
+            <input type="text" class="form-control" id="productName" @bind="@_productName" />
+        </div>
+        <div class="form-group">
+            <label form="productPrice">Product Price</label>
+            <input type="number" class="form-control" id="productPrice" @bind="@_productPrice" />
+        </div>
+        <button class="btn btn-success" @onclick="AddProductAsync">Save</button>
+        <button class="btn btn-secondary" @onclick="CloseOverlayAsync">Cancel</button>
+    </div>
+</div>>
+
+@code {
+    private string? _productName;
+    private string? _productPrice;
+
+    [Parameter]
+    public EventCallback<Product> ProductAdded { get; set; }
+
+    [Parameter]
+    public bool IsOverlayVisible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool>   IsOverlayVisibleChanged { get; set; }
+
+    private async Task AddProductAsync()
+    {
+        var newProduct = new Product { Name = _productName, Price = decimal.Parse(_productPrice) };
+        var product = await _productService.AddProductAsync(newProduct);
+        await ProductAdded.InvokeAsync(product);
+        await IsOverlayVisibleChanged.InvokeAsync(false);
+    }
+
+    private async Task CloseOverlayAsync()
+    {
+        await IsOverlayVisibleChanged.InvokeAsync(false);
+    }
+
+}
