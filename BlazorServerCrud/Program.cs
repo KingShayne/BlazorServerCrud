@@ -1,3 +1,4 @@
+using BlazorServerCrud;
 using BlazorServerCrud.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -18,6 +19,9 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
 {
     options.UseSqlServer(cs);
 });
+
+// Register Scoped ProductService in Dependency Injection Container to use in Razor Components
+builder.Services.AddScoped<ProductService>();
 
 var app = builder.Build();
 
