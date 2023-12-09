@@ -1,0 +1,45 @@
+﻿@page "/products/{id:int}"
+@inject ProductService _productService
+
+@if(product is null)
+{
+    <p>No such product found.</p>
+}
+else
+{
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">@product.Name</h5>
+            <p class="card-text">Price: $@product.Price</p>
+            <button class="btn btn-primary" @onclick="EditProduct">Edit</button>
+        </div>
+    </div>
+}
+
+@if (OverlayVisible)
+{
+    // Two way binding.
+    <EditProduct Product="product" @bind-IsOverlayVisible="OverlayVisible" />
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Product? product;
+    private bool OverlayVisible { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        product = await _productService.GetProductByIdAsync(Id);
+    }
+
+    private void EditProduct()
+    {
+        OverlayVisible = true;
+    }
+
+    private void OnProductUpdated(Product updatedProduct)
+    {
+        product = updatedProduct;
+    }
+}
