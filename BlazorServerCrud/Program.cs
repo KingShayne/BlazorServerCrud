@@ -10,6 +10,15 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
+// Configure connection String
+var cs = builder.Configuration.GetConnectionString("Default");
+
+// Use Register Context with Dependency Injection
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
+{
+    options.UseSqlServer(cs);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
