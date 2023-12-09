@@ -1,0 +1,74 @@
+﻿@page "/products"
+@inject ProductService _productService
+@inject NavigationManager _navigationManager
+
+<h3>Available Products</h3>
+
+<div class="row">
+    <div class="col col-3">
+        <button class="btn btn-rounded btn-primary" @onclick="AddProduct">
+            Add Product
+        </button>
+    </div>
+</div>
+
+@if(AddOverlayVisible)
+{
+    <AddProduct @bind-IsOverlayVisible="AddOverlayVisible" ProductAdded="OnProductAdded" />
+}
+@if(_products.Count() <= 0)
+{
+    <p>No products available</p>
+}
+else
+{
+    <div class="row">
+        @foreach(var product in _products)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">Price: @product.Price</p>
+                        <div>
+                            <button class="btn btn-info" @onclick="() => ViewDetails(product)">View Details</button>
+                            <button class="btn btn-danger" @onclick="() => DeleteProduct(product)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+@code {
+    private List<Product> _products = new List<Product>();
+    private bool AddOverlayVisible { get; set; } = false; 
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await _productService.GetAllProductsAsync();
+        _products = result.ToList();
+    }
+
+    private void AddProduct()
+    {
+        AddOverlayVisible = true;
+    }
+
+    private void OnProductAdded(Product newProduct)
+    {
+        _products.Add(newProduct);
+        StateHasChanged();
+    }
+
+    private void ViewDetails(Product product)
+    {
+        _navigationManager.NavigateTo($"/products/{product.Id}");
+    }
+    private async Task DeleteProduct(Product product)
+    {
+        await _productService.DeleteProductAsync(product!.Id);
+        _products.Remove(product);
+    }
+
+}
