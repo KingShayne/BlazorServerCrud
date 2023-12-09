@@ -24,4 +24,26 @@
     [Parameter]
     public bool IsOverlayVisible { get; set; }
 
+    [Parameter]
+    public EventCallback<bool> IsOverLayVisibleChanged { get; set; }
+
+    private async Task SaveProductAsync()
+    {
+        var updated = await _productService.UpdateProductAsync(Product);
+
+        if(updated is not null)
+        {
+            await IsOverLayVisibleChanged.InvokeAsync(false);
+        }
+        else
+        {
+            Console.WriteLine("Updated failed");
+        }
+
+    }
+
+    private async Task CloseOverlayAsync()
+    {
+        await IsOverLayVisibleChanged.InvokeAsync(false);
+    }
 }
